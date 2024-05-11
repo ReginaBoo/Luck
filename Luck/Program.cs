@@ -16,7 +16,13 @@ namespace Luck
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            GameModel model = new GameModel();
+
+            GameView view = new GameView(model);
+            GameController controller = new GameController(model, view);
+
+            Application.Run(view);
         }
     }
 }

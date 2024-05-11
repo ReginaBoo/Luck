@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.AxHost;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Luck
 {
@@ -17,15 +9,13 @@ namespace Luck
     {
         private PictureBox firstPlayer;
         private PictureBox floor;
-        private PictureBox platform;
         private PictureBox ladder;
         List<int> positionX = new List<int> {};
 
 
-        bool goLeft, goRight,goUp, jumping, isGameOver;
+        bool goLeft, goRight, goUp, jumping;
         int jumpSpeed;
         int force;
-        int score = 0;
         int playerSpeed = 7;
 
         public Form1()
@@ -106,7 +96,7 @@ namespace Luck
         {
             ClientSize = new Size(1536, 960);
 
-            this.BackgroundImage = Image.FromFile("C:\\C#\\Luck\\Luck\\Sprites\\Background.png");
+            this.BackgroundImage = Image.FromFile(@"..\..\Sprites\Background.png");
             this.BackColor = ColorTranslator.FromHtml("#75c1ff");
             this.BackgroundImageLayout = ImageLayout.Stretch; 
             this.FormBorderStyle = FormBorderStyle.None;
