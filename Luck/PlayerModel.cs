@@ -17,8 +17,7 @@ namespace Luck
         public bool GoRight;
         public bool Jumping;
         public bool GoUp;
-        public int Force;
-        public int JumpSpeed;
+        public int Score;
         public bool onPlatform;
         public bool GoDown;
 

@@ -9,11 +9,14 @@ namespace Luck
     public partial class GameView : Form
     {
         private GameModel model;
-        public PictureBox firstPlayer;
+        public PictureBox player;
         public PictureBox floor;
+        public PictureBox enemy;
         private GameController controller;
         public List<PictureBox> platformPictureBoxes;
         private List<PictureBox> ladderPictureBoxes;
+        public List<PictureBox> coinsPictureBoxes;
+        public Label scoreLabel;
 
         public GameView(GameModel model)
         {
@@ -25,6 +28,7 @@ namespace Luck
             controller = new GameController(model, this);
 
             this.KeyPreview = true;
+
             InitializeUI();
         }
 
@@ -33,31 +37,54 @@ namespace Luck
         {
             DrawForm();
             DrawPlayer();
+            DrawEnemy();
             DrawPlatforms();
             DrawLadders();
+            DrawCoins();
+            DrawLabelScore();
+        }
+
+        public void DrawMassageBox() {
+            var gameOver = MessageBox.Show("Вы проиграли!", "Game Over", MessageBoxButtons.OK);
+
         }
         private void DrawForm() 
         {
             ClientSize = new Size(1536, 960);
 
-            this.BackgroundImage = Image.FromFile(@"..\..\Sprites\Background.png");
-            this.BackColor = ColorTranslator.FromHtml("#75c1ff");
+            this.BackgroundImage = Image.FromFile(@"..\..\Sprites\Background.jpg");
             this.BackgroundImageLayout = ImageLayout.Stretch;
             this.FormBorderStyle = FormBorderStyle.None;
         }
         private void DrawPlayer()
         {
-
-            firstPlayer = new PictureBox
+            player = new PictureBox
             {
                 Image = Image.FromFile(@"..\..\Sprites\berry.png"),
                 Size = new Size(model.Player.Width, model.Player.Height),
                 SizeMode = PictureBoxSizeMode.StretchImage,
                 Location = new Point(model.Player.X,model.Player.Y),
-                Tag = "player"
+                Tag = "player",
+                BackColor = Color.Transparent
             };
 
-            this.Controls.Add(firstPlayer);
+            this.Controls.Add(player);
+        }
+
+        private void DrawEnemy()
+        {
+            enemy = new PictureBox
+            {
+                Image = Image.FromFile(@"..\..\Sprites\tomato.png"), 
+                Size = new Size(model.Enemy.Width, model.Enemy.Height),
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                Location = new Point(model.Enemy.X, model.Enemy.Y),
+                Tag = "enemy",
+                BackColor = Color.Transparent
+            };
+
+            
+            this.Controls.Add(enemy);
         }
 
         private void DrawPlatforms()
@@ -68,7 +95,8 @@ namespace Luck
                 BackgroundImageLayout = ImageLayout.Tile,
                 Size = new Size(ClientSize.Width, 150),
                 Location = new Point(0, ClientSize.Height - 150),
-                Tag = "platform"
+                Tag = "platform",
+                BackColor = Color.Transparent
             };
             this.Controls.Add(floor);
 
@@ -84,7 +112,8 @@ namespace Luck
                     BackgroundImageLayout = ImageLayout.Stretch,
                     Size = new Size(platform.Width, platform.Height),
                     Location = new Point(platform.X, platform.Y),
-                    Tag = "platform"
+                    Tag = "platform",
+                    BackColor = Color.Transparent
                 };
 
                 platformPictureBoxes.Add(platformPictureBox);
@@ -105,11 +134,45 @@ namespace Luck
                     SizeMode = PictureBoxSizeMode.StretchImage,
                     Size = new Size(40, 150),
                     Location = new Point(ladder.X, ladder.Y),
-                    Tag = "ladder"
+                    Tag = "ladder",
+                    BackColor = Color.Transparent
                 };
                 ladderPictureBoxes.Add(ladderPictureBox);
                 this.Controls.Add(ladderPictureBox);
             }
+        }
+
+        private void DrawCoins() { 
+            coinsPictureBoxes = new List<PictureBox>();
+            foreach (var coin in model.coins)
+            {
+                PictureBox coinPictureBox = new PictureBox
+                {
+                    Image = Image.FromFile(@"..\..\Sprites\coin.png"),
+                    SizeMode = PictureBoxSizeMode.StretchImage,
+                    Size = new Size(30, 30),
+                    Location = new Point(coin.X, coin.Y),
+                    Tag = "ladder",
+                    BackColor = Color.Transparent
+                };
+                coinsPictureBoxes.Add(coinPictureBox);
+                this.Controls.Add(coinPictureBox);
+            }
+
+        }
+
+        public void DrawLabelScore()
+        {
+
+            scoreLabel = new Label
+            {
+                Text = "Score: " + model.Player.Score.ToString(),
+                Location = new Point(ClientSize.Width - 100, 20),
+                ForeColor = Color.Black,
+                Font = new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold),
+                AutoSize = true
+            };
+            this.Controls.Add(scoreLabel);
         }
 
         private void KeyIsDown(object sender, KeyEventArgs e)
@@ -124,9 +187,26 @@ namespace Luck
 
         public void UpdatePlayerPosition(int X, int Y) 
         {
-            firstPlayer.Location = new Point(X, Y);
+            player.Location = new Point(X, Y);
         }
 
+        public void UpdateEnemyPosition(int X, int Y)
+        {
+            enemy.Location = new Point(X, Y);
+        }
 
+        public void UpdateScoreLabel(int score)
+        {
+            scoreLabel.Text = "Score: " + score.ToString();
+        }
+
+        public void RemoveCoinPictureBox(PictureBox coinPictureBox)
+        {
+            if (coinPictureBox != null && this.Controls.Contains(coinPictureBox))
+            {
+                this.Controls.Remove(coinPictureBox);
+                coinPictureBox.Dispose();
+            }
+        }
     }
 }
