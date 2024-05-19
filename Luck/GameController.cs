@@ -94,7 +94,7 @@ namespace Luck
             }
             if (model.Enemy.GoUp)
             {
-                model.MoveEnemyUp(model.Enemy.Speed);
+                model.MoveEnemyUp(model.Enemy.Speed+1);
             }
             model.CheckTop();
             model.CheckTopEnemy();

@@ -426,7 +426,7 @@ namespace Luck
                 }
             }
 
-            if (!enemyOnPlatform && !Enemy.GoUp) MoveEnemyDown(4);
+            if (!enemyOnPlatform && !Enemy.GoUp) MoveEnemyDown(Enemy.Speed+2);
 
 
             if (CheckCollisionEnemyPlatform() && !enemyOnLadder && Player.Y >= (Enemy.Y - 10))
