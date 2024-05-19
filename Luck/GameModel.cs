@@ -17,6 +17,8 @@ namespace Luck
         public CoinModel RemovedCoin;
         public EnemyModel Enemy { get; private set; }
 
+        public bool GameOver  = false;
+
         public GameModel()
         {
             InitializePlayer();
@@ -43,8 +45,8 @@ namespace Luck
             int platformWidth = 128;
             int platformHeight = 30;
             int startY = 960 - 300;
-            int spacingY = -170;
-            int numberOfPlatforms = 9;
+            int spacingY = -180;
+            int numberOfPlatforms = 10;
             int numberOfRows = 4;
             Random rnd = new Random();
 
@@ -81,18 +83,47 @@ namespace Luck
             List<CoinModel> coins = new List<CoinModel>();
             Random rnd = new Random();
 
+            int totalCoins = 13;
+            int attempts = 0;
+
+            int topPlatformY = int.MaxValue;
             foreach (var platform in Platforms)
             {
-                int minX = platform.X;
-                int maxX = platform.X + platform.Width - 30; // Уменьшаем на ширину монеты
+                if (platform.Y < topPlatformY)
+                {
+                    topPlatformY = platform.Y;
+                }
+            }
 
+            while (coins.Count < totalCoins && attempts < 3000)
+            {
+                attempts++;
 
-                // Генерируем случайные координаты для монеты в пределах границ платформы
-                int coinX = platform.X + 50;
-                int coinY = platform.Y - 45;
+                var platform = Platforms[rnd.Next(Platforms.Count)];
 
-                // Создаем монету и добавляем ее в список
+                int coinX = platform.X + 47;
+                int coinY = platform.Y - 35;
+
+                if (platform.Y == topPlatformY)
+                {
+                    bool foundLadder = false;
+                    foreach (var ladder in Ladders)
+                    {
+                        if (ladder.X <= coinX && ladder.X + ladder.Width >= coinX && ladder.Y-30 == platform.Y) 
+                        {
+                            foundLadder = true;
+                            coinY = ladder.Y - 65;
+                            break;
+                        }
+                    }
+                    if (!foundLadder)
+                    {
+                        continue;
+                    }
+                }
+
                 CoinModel coin = new CoinModel(coinX, coinY);
+
                 bool intersectsWithLadder = false;
                 foreach (var ladder in Ladders)
                 {
@@ -102,35 +133,51 @@ namespace Luck
                         break;
                     }
                 }
-                if (!intersectsWithLadder)
+
+                bool intersectsWithOtherCoins = false;
+                foreach (var existingCoin in coins)
+                {
+                    if (CoinsIntersect(coin, existingCoin))
+                    {
+                        intersectsWithOtherCoins = true;
+                        break;
+                    }
+                }
+
+                if (!intersectsWithLadder && !intersectsWithOtherCoins)
                 {
                     coins.Add(coin);
                 }
-
             }
-
             return coins;
         }
 
         private bool CoinIntersectsLadder(CoinModel coin, LadderModel ladder)
         {
-            // Проверяем пересечение по осям X и Y
-            bool intersectsX = coin.X < ladder.X + ladder.Width && coin.X + coin.Width > ladder.X;
-            bool intersectsY = coin.Y < ladder.Y + ladder.Height && coin.Y + coin.Height > ladder.Y;
-            // Если есть пересечение по обеим осям, возвращаем true
-            return intersectsX && intersectsY;
+            return coin.X + coin.Width >= ladder.X &&
+                     coin.X <= ladder.X + ladder.Width &&
+                     coin.Y + coin.Height >= ladder.Y &&
+                     coin.Y <= ladder.Y + ladder.Height;
         }
+
+        private bool CoinsIntersect(CoinModel coin1, CoinModel coin2)
+        {
+            return coin1.X == coin2.X && coin1.Y == coin2.Y;
+        }
+
+
 
         private List<LadderModel> CreateLadders()
         {
             List<LadderModel> ladders = new List<LadderModel>();
             Dictionary<int, List<int>> copyPositionX = new Dictionary<int, List<int>>(PositionX);
 
-            int ladderHeight = 150;
-            int startY = 660;
-            int spacingY = -290;
+            int ladderHeight = 120;
+            int ladderWidth = 35;
+            int startY = 690;
+            int spacingY = 30;
             int numberOfRows = 4;
-            int numberOfColumns = 5;
+            int numberOfColumns = 4;
 
             Random rnd = new Random();
 
@@ -163,9 +210,9 @@ namespace Luck
                     {
                         break;
                     }
-                    int ladderY = startY + i * (ladderHeight + spacingY);
+                    int ladderY = startY - i * (ladderHeight + spacingY);
 
-                    LadderModel ladder = new LadderModel(ladderX, ladderY);
+                    LadderModel ladder = new LadderModel(ladderX, ladderY, ladderHeight, ladderWidth);
                     ladders.Add(ladder);
                 }
             }
@@ -312,14 +359,14 @@ namespace Luck
             bool enemyOnLadder = false;
             bool enemyOnPlatform = CheckCollisionEnemyPlatform();
 
-            if (Player.Y < (Enemy.Y - 20))
+            if (Player.Y < (Enemy.Y - 10))
             {
                 LadderModel nearestLadder = null;
                 int minDistance = int.MaxValue;
 
                 foreach (var ladder in Ladders)
                 {
-                    if ((Enemy.Y - ladder.Y) >= (ladder.Height - Enemy.Height))
+                    if ((Enemy.Y - ladder.Y) == (ladder.Height - Enemy.Height))
                     {
                         int distance = Math.Abs(ladder.X - Player.X);
                         if (distance < minDistance)
@@ -357,7 +404,7 @@ namespace Luck
             if (!enemyOnPlatform && !Enemy.GoUp) MoveEnemyDown(4);
 
 
-            if (CheckCollisionEnemyPlatform() && !enemyOnLadder && Player.Y >= Enemy.Y - 20)
+            if (CheckCollisionEnemyPlatform() && !enemyOnLadder && Player.Y >= (Enemy.Y - 10))
             {
                 if (Enemy.X < Player.X)
                 {
@@ -370,6 +417,7 @@ namespace Luck
                     Enemy.GoRight = false;
                 }
             }
+
 
             foreach (var ladder in Ladders)
             {
@@ -384,30 +432,9 @@ namespace Luck
                     else if (Player.Y > Enemy.Y - 20)
                     {
                         Enemy.GoUp = false;
-                        Enemy.Y += 3; // Move enemy down
                     }
                     enemyOnLadder = true;
                     break;
-                }
-            }
-
-            foreach (var ladder in Ladders)
-            {
-                if (CheckLadderCollision(ladder))
-                {
-                    if ((Enemy.Y - 20) > Player.Y)
-                    {
-                        Enemy.GoUp = true;
-                    }
-                    else if ((Enemy.Y - 20) < Player.Y)
-                    {
-                        Enemy.GoUp = false;
-                    }
-                    break;
-                }
-                else
-                {
-                    Enemy.GoUp = false;
                 }
             }
         }
@@ -417,14 +444,20 @@ namespace Luck
         {
             Enemy.Y += x;
         }
-        public void MoveEnemyRight(int x)
+        public void MoveEnemyRight(int speed)
         {
-            Enemy.X += x;
+            if (Enemy.X + speed + Enemy.Width <= 1536)
+            {
+                Enemy.X += speed;
+            }
         }
 
-        public void MoveEnemyLeft(int x)
+        public void MoveEnemyLeft(int speed)
         {
-            Enemy.X -= x;
+            if (Enemy.X - speed >= 0)
+            {
+                Enemy.X -= speed;
+            }
         }
 
         public void MoveEnemyUp(int y)
@@ -474,6 +507,19 @@ namespace Luck
 
             }
             return false;
+        }
+
+
+        public void WrapPlayer()
+        {
+            if (Player.X + Player.Width < 0)
+            {
+                Player.X = 1536;
+            }
+            else if (Player.X > 1536)
+            {
+                Player.X = -Player.Width;
+            }
         }
     }
 }

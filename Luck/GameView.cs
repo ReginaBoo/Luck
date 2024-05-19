@@ -132,12 +132,13 @@ namespace Luck
                 {
                     Image = Image.FromFile(@"..\..\Sprites\Ladder.png"),
                     SizeMode = PictureBoxSizeMode.StretchImage,
-                    Size = new Size(40, 150),
+                    Size = new Size(ladder.Width, ladder.Height),
                     Location = new Point(ladder.X, ladder.Y),
                     Tag = "ladder",
                     BackColor = Color.Transparent
                 };
                 ladderPictureBoxes.Add(ladderPictureBox);
+                
                 this.Controls.Add(ladderPictureBox);
             }
         }
@@ -167,7 +168,7 @@ namespace Luck
             scoreLabel = new Label
             {
                 Text = "Score: " + model.Player.Score.ToString(),
-                Location = new Point(ClientSize.Width - 100, 20),
+                Location = new Point(30, 30),
                 ForeColor = Color.Black,
                 Font = new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold),
                 AutoSize = true
@@ -207,6 +208,11 @@ namespace Luck
                 this.Controls.Remove(coinPictureBox);
                 coinPictureBox.Dispose();
             }
+        }
+
+        public void DrawWinMessageBox()
+        {
+            var winMessage = MessageBox.Show("Вы выиграли!", "Congratulations", MessageBoxButtons.OK);
         }
     }
 }

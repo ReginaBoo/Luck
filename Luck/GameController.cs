@@ -38,6 +38,11 @@ namespace Luck
         }
         private void UpdateGame()
         {
+            if (model.GameOver)
+            {
+                return;
+            }
+
             if (model.CheckPlayerEnemyCollision())
             {
                 gameTimer.Stop();
@@ -57,14 +62,19 @@ namespace Luck
 
                 if (removedCoinIndex != -1 && removedCoinIndex < view.coinsPictureBoxes.Count)
                 {
-                    // Скрываем PictureBox монеты
                     view.RemoveCoinPictureBox(view.coinsPictureBoxes[removedCoinIndex]);
 
-                    // Удаляем скрытый PictureBox монеты из списка в представлении
                     view.coinsPictureBoxes.RemoveAt(removedCoinIndex);
                 }
 
             }
+
+            if (model.Player.Score == 13)
+            {
+                WinGame();
+                return;
+            }
+
             if (model.Enemy.GoLeft)
             {
                 model.MoveEnemyLeft(4);
@@ -88,6 +98,8 @@ namespace Luck
             model.CheckTop();
             model.CheckTopEnemy();
             model.CheckCollisionEnemyPlatform();
+
+            model.WrapPlayer();
 
 
             if (model.Player.GoLeft && model.CheckCollision() || (model.Player.GoLeft && model.PlayerIsOnLadder()))
@@ -113,15 +125,22 @@ namespace Luck
             view.UpdatePlayerPosition(model.Player.X, model.Player.Y);
         }
 
+        private void WinGame()
+        {
+            if (model.GameOver) return;
+
+            model.GameOver = true;
+            gameTimer.Stop();
+            view.DrawWinMessageBox();
+            CloseAllForms();
+        }
+
         private void GameOver()
         {
-            // Set gameOver flag to true
-            gameOver = true;
+            if (model.GameOver) return;
 
-            // Stop the timer to prevent multiple message boxes
+            model.GameOver = true;
             gameTimer.Stop();
-
-            // Show the game over message box
             view.DrawMassageBox();
             CloseAllForms();
         }

@@ -10,13 +10,14 @@ namespace Luck
     {
         public int X { get; set; }
         public int Y { get; set; }
-        public int Width = 40;
-        public int Height = 150;
-        public LadderModel(int x, int y)
+        public int Width;
+        public int Height;
+        public LadderModel(int x, int y, int h, int w)
         {
             X = x;
             Y = y;
-
+            Height = h;
+            Width = w;
         }
     }
 }
