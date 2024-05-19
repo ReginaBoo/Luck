@@ -20,6 +20,6 @@ namespace Luck
         public int Score;
         public bool onPlatform;
         public bool GoDown;
-
+        public int Speed;
     }
 }

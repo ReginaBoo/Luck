@@ -46,7 +46,7 @@ namespace Luck
             int platformHeight = 30;
             int startY = 960 - 300;
             int spacingY = -180;
-            int numberOfPlatforms = 10;
+            int numberOfPlatforms = 9;
             int numberOfRows = 4;
             Random rnd = new Random();
 
@@ -104,6 +104,12 @@ namespace Luck
                 int coinX = platform.X + 47;
                 int coinY = platform.Y - 35;
 
+
+                if (IsSinglePlatform(platform))
+                {
+                    continue; 
+                }
+
                 if (platform.Y == topPlatformY)
                 {
                     bool foundLadder = false;
@@ -150,6 +156,23 @@ namespace Luck
                 }
             }
             return coins;
+        }
+
+        private bool IsSinglePlatform(PlatformModel platform)
+        {
+            int count = 0;
+            foreach (var p in Platforms)
+            {
+                if (p.Y == platform.Y && Math.Abs(p.X - platform.X) <= platform.Width + 10) 
+                {
+                    count++;
+                    if (count > 1)
+                    {
+                        return false; 
+                    }
+                }
+            }
+            return true; 
         }
 
         private bool CoinIntersectsLadder(CoinModel coin, LadderModel ladder)
@@ -240,6 +263,7 @@ namespace Luck
                 Height = 50,
                 X = 200,
                 Y = 960 - 200,
+                Speed = 5
             };
 
         }
@@ -251,7 +275,8 @@ namespace Luck
                 Width = 40,
                 Height = 40,
                 X = 50,
-                Y = 960 - 190
+                Y = 960 - 190,
+                Speed = 4,
             };
         }
 

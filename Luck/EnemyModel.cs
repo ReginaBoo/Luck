@@ -15,5 +15,6 @@ namespace Luck
         public bool GoRight;
         public bool GoLeft;
         public bool GoUp;
+        public int Speed;
     }
 }

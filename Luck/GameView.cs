@@ -212,7 +212,7 @@ namespace Luck
 
         public void DrawWinMessageBox()
         {
-            var winMessage = MessageBox.Show("Вы выиграли!", "Congratulations", MessageBoxButtons.OK);
+            _ = MessageBox.Show("Вы выиграли!", "Congratulations", MessageBoxButtons.OK);
         }
     }
 }

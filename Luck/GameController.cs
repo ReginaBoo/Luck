@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Net.Configuration;
 using System.Windows.Forms;
 
 namespace Luck
@@ -77,23 +78,23 @@ namespace Luck
 
             if (model.Enemy.GoLeft)
             {
-                model.MoveEnemyLeft(4);
+                model.MoveEnemyLeft(model.Enemy.Speed);
             }
             if (model.Enemy.GoRight) 
             {
-                model.MoveEnemyRight(4);
+                model.MoveEnemyRight(model.Enemy.Speed) ;
             }
             if (model.PlayerIsOnLadder() && model.Player.GoDown && !model.CheckCollision())
             {
-                model.MovePlayerDown(6);
+                model.MovePlayerDown(model.Player.Speed) ;
             }
             if (model.PlayerIsOnLadder() && model.Player.GoUp)
             {
-                model.MovePlayerUp(4);
+                model.MovePlayerUp(model.Player.Speed-1);
             }
             if (model.Enemy.GoUp)
             {
-                model.MoveEnemyUp(4);
+                model.MoveEnemyUp(model.Enemy.Speed);
             }
             model.CheckTop();
             model.CheckTopEnemy();
@@ -104,21 +105,21 @@ namespace Luck
 
             if (model.Player.GoLeft && model.CheckCollision() || (model.Player.GoLeft && model.PlayerIsOnLadder()))
             {
-                model.MovePlayerLeft(6);
+                model.MovePlayerLeft(model.Player.Speed);
             }
 
 
             if (model.Player.GoRight && model.CheckCollision() || (model.Player.GoRight && model.PlayerIsOnLadder()))
             {
-                    model.MovePlayerRight(6);
+                model.MovePlayerRight(model.Player.Speed) ;
             }
 
             if (!model.CheckCollision() && !model.PlayerIsOnLadder())
             {
 
                 model.Player.Y += 10;
-                if (model.Player.GoLeft) model.MovePlayerLeft(4);
-                if(model.Player.GoRight) model.MovePlayerRight(4);
+                if (model.Player.GoLeft) model.MovePlayerLeft(model.Player.Speed-2);
+                if(model.Player.GoRight) model.MovePlayerRight(model.Player.Speed-2);
 
             }
             view.UpdateEnemyPosition(model.Enemy.X, model.Enemy.Y);
