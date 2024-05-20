@@ -200,7 +200,7 @@ namespace Luck
             int startY = 690;
             int spacingY = 30;
             int numberOfRows = 4;
-            int numberOfColumns = 4;
+            int numberOfColumns = 5;
 
             Random rnd = new Random();
 
@@ -276,7 +276,7 @@ namespace Luck
                 Height = 40,
                 X = 50,
                 Y = 960 - 190,
-                Speed = 4,
+                Speed = 5,
             };
         }
 
@@ -426,7 +426,7 @@ namespace Luck
                 }
             }
 
-            if (!enemyOnPlatform && !Enemy.GoUp) MoveEnemyDown(Enemy.Speed+2);
+            if (!enemyOnPlatform && !Enemy.GoUp) MoveEnemyDown(Enemy.Speed+1);
 
 
             if (CheckCollisionEnemyPlatform() && !enemyOnLadder && Player.Y >= (Enemy.Y - 10))

@@ -90,11 +90,11 @@ namespace Luck
             }
             if (model.PlayerIsOnLadder() && model.Player.GoUp)
             {
-                model.MovePlayerUp(model.Player.Speed-1);
+                model.MovePlayerUp(model.Player.Speed+1);
             }
             if (model.Enemy.GoUp)
             {
-                model.MoveEnemyUp(model.Enemy.Speed+1);
+                model.MoveEnemyUp(model.Enemy.Speed);
             }
             model.CheckTop();
             model.CheckTopEnemy();
@@ -118,8 +118,8 @@ namespace Luck
             {
 
                 model.Player.Y += 10;
-                if (model.Player.GoLeft) model.MovePlayerLeft(model.Player.Speed-2);
-                if(model.Player.GoRight) model.MovePlayerRight(model.Player.Speed-2);
+                if (model.Player.GoLeft) model.MovePlayerLeft(model.Player.Speed-1);
+                if(model.Player.GoRight) model.MovePlayerRight(model.Player.Speed-1);
 
             }
             view.UpdateEnemyPosition(model.Enemy.X, model.Enemy.Y);
